@@ -255,18 +255,29 @@ module DocusignRest
     end
 
 
-    # TODO (2014-02-03) jonk => document
     def get_event_notification(event_notification)
       return {} unless event_notification
       {
-        useSoapInterface:          event_notification[:use_soap_interface] || false,
-        includeCertificatWithSoap: event_notification[:include_certificate_with_soap] || false,
-        url:                       event_notification[:url],
-        loggingEnabled:            event_notification[:logging],
-        'EnvelopeEvents' => Array(event_notification[:envelope_events]).map do |envelope_event|
+        url:                               event_notification[:url],
+        loggingEnabled:                    event_notification[:logging] || false,
+        requireAcknowledgment:             event_notification[:require_asknowledgment] || false,
+        useSoapInterface:                  event_notification[:use_soap_interface] || false,
+        includeCertificateWithSoap:        event_notification[:include_certificate_with_soap] || false,
+        signMessageWithX509Cert:           event_notification[:sign_message_with_x_509_cert] || false,
+        includeDocuments:                  event_notification[:include_documents] || false,
+        includeEnvelopeVoidReason:         event_notification[:include_envelope_void_reason] || false,
+        includeTimeZone:                   event_notification[:include_time_zone] || false,
+        includeSenderAccountAsCustomField: event_notification[:include_sender_account_as_custom_field] || false,
+        includeDocumentFields:             event_notification[:include_document_fields] || false,
+        includeCertificateOfCompletion:    event_notification[:include_certificate_of_completion] || false,
+        'envelopeEvents' => Array(event_notification[:envelope_events]).map do |envelope_event|
           {
-            includeDocuments:        envelope_event[:include_documents] || false,
             envelopeEventStatusCode: envelope_event[:envelope_event_status_code]
+          }
+        end,
+        'recipientEvents' => Array(event_notification[:recipient_events]).map do |recipient_event|
+          {
+            recipientEventStatusCode: recipient_event[:recipient_event_status_code]
           }
         end
       }
@@ -608,6 +619,7 @@ module DocusignRest
       post_body = {
         emailBlurb:   "#{options[:email][:body] if options[:email]}",
         emailSubject: "#{options[:email][:subject] if options[:email]}",
+        eventNotification:  get_event_notification(options[:event_notification]),
         documents: get_documents(ios),
         recipients: {
           signers: get_signers(options[:signers])
