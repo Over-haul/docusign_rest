@@ -259,7 +259,7 @@ module DocusignRest
       return {} unless event_notification
       {
         url:                               event_notification[:url],
-        loggingEnabled:                    event_notification[:logging] || false,
+        loggingEnabled:                    event_notification[:logging] || true,
         requireAcknowledgment:             event_notification[:require_asknowledgment] || false,
         useSoapInterface:                  event_notification[:use_soap_interface] || false,
         includeCertificateWithSoap:        event_notification[:include_certificate_with_soap] || false,
